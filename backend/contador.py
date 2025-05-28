@@ -10,4 +10,4 @@ df = pd.read_csv(arquivo_csv, encoding='latin1', sep=';', on_bad_lines='skip')
 
 contador_def=df['DEFEITOS'].value_counts()
 
-print(contador_def)
+print(df['DATA'].unique())
