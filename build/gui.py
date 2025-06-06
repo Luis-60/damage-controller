@@ -4,6 +4,11 @@ from tkinter import ttk, messagebox, filedialog
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from main import carregar_csv, processar_dados, gerar_grafico_responsavel, gerar_grafico_categorias, gerar_grafico_mensal, exportar_relatorio
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from backend.responsavel import gerar_grafico_responsavel
+
 
 class DamageControllerApp:
     def __init__(self, master):
@@ -181,13 +186,6 @@ class DamageControllerApp:
             self.tree.insert("", "end", values=list(row))
             
     def atualizar_graficos(self):
-        """Atualiza todos os gráficos na interface"""
-        # Remove gráficos antigos se existirem
-        for attr in ['canvas_resp', 'canvas_cat', 'canvas_mes']:
-            if hasattr(self, attr):
-                getattr(self, attr).get_tk_widget().destroy()
-        
-        # Gráfico por responsável
         self.canvas_resp = gerar_grafico_responsavel(self.df, self.master)
         self.canvas_resp.draw()
         self.canvas_resp.get_tk_widget().place(x=644, y=286)
