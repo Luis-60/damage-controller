@@ -3,11 +3,14 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from main import carregar_csv, processar_dados, gerar_grafico_responsavel, gerar_grafico_categorias, gerar_grafico_mensal, exportar_relatorio
+from main import carregar_csv, processar_dados, exportar_relatorio
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from backend.responsavel import gerar_grafico_responsavel
+from backend.turno import gerar_grafico_turno
+from backend.mensal import gerar_grafico_mensal
+from backend.categoria import gerar_grafico_categoria
 
 
 class DamageControllerApp:
@@ -191,10 +194,14 @@ class DamageControllerApp:
         self.canvas_resp.get_tk_widget().place(x=644, y=286)
         
         # Gráfico por categoria
-        self.canvas_cat = gerar_grafico_categorias(self.df, self.master)
+        self.canvas_cat = gerar_grafico_turno(self.df, self.master)
         self.canvas_cat.draw()
         self.canvas_cat.get_tk_widget().place(x=54, y=286)
-        
+
+        self.canvas_cat_fr = gerar_grafico_categoria(self.df, self.master)
+        self.canvas_cat_fr.draw()
+        self.canvas_cat_fr.get_tk_widget().place(x=54, y=114)
+
         # Gráfico por mês (se existir dados de mês)
         if 'MÊS' in self.df.columns:
             self.canvas_mes = gerar_grafico_mensal(self.df, self.master)

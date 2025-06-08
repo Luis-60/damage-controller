@@ -116,52 +116,6 @@ def gerar_grafico_responsavel(df, master):
     
     return FigureCanvasTkAgg(fig, master=master)
 
-def gerar_grafico_categorias(df, master):
-    """Gera gráfico de defeitos por categoria"""
-    fig = Figure(figsize=(3.0, 2.5), facecolor="#917FB3")
-    ax = fig.add_subplot()
-    
-    if df.empty or 'DEFEITOS' not in df.columns:
-        ax.text(0.5, 0.5, 'Sem dados disponíveis', 
-                ha='center', va='center', color='white')
-        return FigureCanvasTkAgg(fig, master=master)
-    
-    contagem = df['DEFEITOS'].value_counts().head(5)
-    
-    ax.pie(contagem, labels=contagem.index, autopct='%1.1f%%',
-           colors=['#E5BEEC', '#917FB3', '#2A2F4F', '#FDE2F3', '#9A208C'],
-           textprops={'color': 'white', 'fontsize': 7})
-    
-    ax.set_title('Defeitos por Categoria', fontsize=8, color='white', pad=10)
-    
-    return FigureCanvasTkAgg(fig, master=master)
-
-def gerar_grafico_mensal(df, master):
-    """Gera gráfico de defeitos por mês"""
-    fig = Figure(figsize=(3.0, 2.5), facecolor="#917FB3")
-    ax = fig.add_subplot()
-    
-    if df.empty or 'MÊS' not in df.columns:
-        ax.text(0.5, 0.5, 'Sem dados disponíveis', 
-                ha='center', va='center', color='white')
-        return FigureCanvasTkAgg(fig, master=master)
-    
-    meses_order = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-                   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
-    
-    contagem = df['MÊS'].value_counts().reindex(meses_order, fill_value=0)
-    
-    ax.plot(contagem.index, contagem.values, marker='o', color='#E5BEEC', linewidth=2)
-    ax.fill_between(contagem.index, contagem.values, color='#917FB3', alpha=0.3)
-    
-    ax.set_title('Defeitos por Mês', fontsize=8, color='white', pad=10)
-    ax.set_ylabel('Qtd. Defeitos', fontsize=7, color='white')
-    ax.tick_params(axis='x', rotation=45, labelsize=6, colors='white')
-    ax.tick_params(axis='y', labelsize=7, colors='white')
-    ax.grid(axis='y', linestyle='--', alpha=0.3, color='white')
-    
-    return FigureCanvasTkAgg(fig, master=master)
-
 def exportar_relatorio(df, file_path):
     """
     Exporta um relatório consolidado para Excel
