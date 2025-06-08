@@ -72,16 +72,6 @@ def processar_dados(df):
             (df['DEFEITOS'].str.strip() != '') &
             (~df['DEFEITOS'].str.strip().str.upper().isin(['SEM DEFEITO', 'O SEM DEFEITO', 'NENHUM']))
         ]
-    
-    # Processamento de datas (se existir a coluna)
-    if 'DATA' in df.columns:
-        try:
-            df['DATA'] = pd.to_datetime(df['DATA'], dayfirst=True, errors='coerce')
-            df['MÊS'] = df['DATA'].dt.month_name().str.title()
-            df['DIA'] = df['DATA'].dt.day_name().str.title()
-        except:
-            pass
-    
     return df
 
 def gerar_grafico_responsavel(df, master):

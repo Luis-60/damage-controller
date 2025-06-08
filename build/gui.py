@@ -189,6 +189,13 @@ class DamageControllerApp:
             self.tree.insert("", "end", values=list(row))
             
     def atualizar_graficos(self):
+        """Atualiza todos os gráficos na interface"""
+        # Remove gráficos antigos se existirem
+        for attr in ['canvas_resp', 'canvas_cat', 'canvas_mes']:
+            if hasattr(self, attr):
+                getattr(self, attr).get_tk_widget().destroy()
+        
+        # Gráfico por responsável
         self.canvas_resp = gerar_grafico_responsavel(self.df, self.master)
         self.canvas_resp.draw()
         self.canvas_resp.get_tk_widget().place(x=644, y=286)
@@ -228,8 +235,8 @@ class DamageControllerApp:
                 messagebox.showerror("Erro", "Não foi possível exportar o relatório")
                 
     def filtrar_dados(self):
-        """Filtra os dados conforme critérios (implementar lógica específica)"""
-        messagebox.showinfo("Info", "Funcionalidade de filtro será implementada aqui")
+       from TesteFiltro import filtrar_dados
+       filtrar_dados(self)
         
     def mostrar_ajuda(self):
         """Mostra informações de ajuda"""
@@ -241,8 +248,20 @@ class DamageControllerApp:
             "3. Exporte relatórios com 'Exportar Relatório'\n\n"
             "Suporte: contato@damagecontroller.com"
         )
+    def carregar_dados(self):
+        from main import carregar_csv, processar_dados  # Importa suas funções utilitárias
+
+        self.df = carregar_csv()
+        if self.df is not None:
+            self.df_original = self.df.copy()  # Armazena cópia original para limpar filtros depois
+            self.df = processar_dados(self.df)
+            self.atualizar_interface()
+        else:
+            messagebox.showinfo("Erro", "Nenhum dado foi carregado.")
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = DamageControllerApp(root)
     root.mainloop()
+
+
