@@ -14,22 +14,29 @@ def gerar_grafico_categoria(lista, master):
 
     contagem = lista_filtrada['DEFEITOS'].value_counts().head(5)
 
-    fig = Figure(figsize=(3.3, 2.5), dpi=100)
-    ax = fig.add_subplot(111)
-    bars = ax.bar(contagem.index, contagem.values, color='lightblue', edgecolor='black')
+    fig = Figure(figsize=(5.88, 3.7), dpi=50)
 
+
+    ax = fig.add_subplot(111)
+    bars = ax.bar(contagem.index, contagem.values, color="#814BA8", edgecolor='black')
+    ax.set_facecolor((0.29, 0.0, 0.51, 0.25))
+    max_y = max(contagem.values)
+    ax.set_ylim(0, max_y * 1.2)
 
     for bar in bars:
         height = bar.get_height()
         ax.text(bar.get_x() + bar.get_width() / 2, height + 0.5, f'{int(height)}',
-                ha='center', va='bottom', fontsize=9)
+                ha='center', va='bottom', fontsize=11, fontweight='bold', color='black')
 
 
     ax.set_title('Número de defeitos por categoria')
     ax.set_xlabel('Defeito')
     ax.set_ylabel('Quantidade')
-    ax.set_xticks(axis='x', which='major', rotation=45)
+    
+    ax.set_xticks(range(len(contagem.index)))
+    ax.set_xticklabels(contagem.index, rotation=45, ha='right')
     ax.grid(axis='y', linestyle='--', alpha=0.7)
+    fig.tight_layout()
 
     canvas = FigureCanvasTkAgg(fig, master=master)
     return canvas

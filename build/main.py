@@ -3,6 +3,7 @@ from tkinter import filedialog, messagebox
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import locale
+import re
 
 # Configuração de locale para datas em português
 try:
@@ -68,10 +69,11 @@ def processar_dados(df):
     
     # Filtra linhas sem defeitos
     if 'DEFEITOS' in df.columns:
-        df = df[
-            (df['DEFEITOS'].str.strip() != '') &
-            (~df['DEFEITOS'].str.strip().str.upper().isin(['SEM DEFEITO', 'O SEM DEFEITO', 'NENHUM']))
-        ]
+        df['DEFEITOS'] = df['DEFEITOS'].str.upper().str.strip()
+
+        padrao_sem_defeito = r'\b(?:SEM\s+DEFEITO|VE[IÍ]CULO\s+SEM\s+DEFEITO|O\s+SEM\s+DEFEITO|NENHUM|NAO\s+TEM\s+DEFEITO|NÃO\s+TEM\s+DEFEITO|OK)\b'
+        df = df[~df['DEFEITOS'].str.contains(padrao_sem_defeito, na=False, regex=True)]
+
     return df
 
 def gerar_grafico_responsavel(df, master):

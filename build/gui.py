@@ -11,6 +11,8 @@ from backend.responsavel import gerar_grafico_responsavel
 from backend.turno import gerar_grafico_turno
 from backend.mensal import gerar_grafico_mensal
 from backend.categoria import gerar_grafico_categoria
+from backend.dia import gerar_grafico_por_dia
+from backend.regiao_peca import gerar_grafico_regiao_peca
 
 
 class DamageControllerApp:
@@ -34,7 +36,7 @@ class DamageControllerApp:
         
         self.setup_canvas()
         self.setup_buttons()
-        self.setup_treeview()
+
         
     def setup_canvas(self):
         self.canvas = tk.Canvas(
@@ -64,12 +66,12 @@ class DamageControllerApp:
         )
         
         # Áreas dos gráficos
-        self.create_section(54.0, 114.0, 348.0, 276.0, "Regiões e peças com maior número de defeitos")
-        self.create_section(54.0, 286.0, 307.0, 515.0, "Número de Defeitos por Categoria")
-        self.create_section(321.0, 286.0, 631.0, 515.0, "Número de Defeitos por Mês")
-        self.create_section(644.0, 286.0, 945.0, 515.0, "Número de Defeitos por Responsável")
-        self.create_section(361.0, 114.0, 652.0, 276.0, "Número de Defeitos por Categoria")
-        self.create_section(666.0, 114.0, 945.0, 276.0, "Número de Defeitos por Dia")
+        self.create_section(54.0, 90.0, 348.0, 276.0, "Defeitos por Categoria")
+        self.create_section(54.0, 286.0, 307.0, 515.0, "Defeitos por turno")
+        self.create_section(321.0, 286.0, 631.0, 515.0, "Regiões e peças")
+        self.create_section(644.0, 286.0, 945.0, 515.0, "Defeitos por Responsável")
+        self.create_section(361.0, 90.0, 652.0, 276.0, "Defeitos por Mês")
+        self.create_section(666.0, 90.0, 945.0, 276.0, "Defeitos por Dia")
         
     def create_section(self, x1, y1, x2, y2, title):
         self.canvas.create_rectangle(
@@ -98,7 +100,7 @@ class DamageControllerApp:
             highlightthickness=0,
             relief="flat"
         )
-        self.btn_load.place(x=376.0, y=26.0, width=117.0, height=25.0)
+        self.btn_load.place(x=476.0, y=26.0, width=117.0, height=25.0)
         
         # Botão Exportar Relatório
         self.btn_export = tk.Button(
@@ -112,7 +114,7 @@ class DamageControllerApp:
             highlightthickness=0,
             relief="flat"
         )
-        self.btn_export.place(x=507.0, y=26.0, width=117.0, height=25.0)
+        self.btn_export.place(x=600.0, y=26.0, width=117.0, height=25.0)
         
         # Outros botões (pode adicionar funcionalidades depois)
         self.btn_filter = tk.Button(
@@ -141,18 +143,7 @@ class DamageControllerApp:
         )
         self.btn_help.place(x=880.0, y=47.0, width=120.0, height=25.0)
         
-    def setup_treeview(self):
-        # Treeview para visualização rápida dos dados
-        self.tree_frame = tk.Frame(self.master, bg="#2A2F4F")
-        self.tree_frame.place(x=50, y=80, width=900, height=30)
-        
-        self.tree = ttk.Treeview(self.tree_frame, height=1)
-        self.tree.pack(fill=tk.BOTH, expand=True)
-        
-        # Barra de rolagem
-        scrollbar = ttk.Scrollbar(self.tree_frame, orient="vertical", command=self.tree.yview)
-        scrollbar.pack(side="right", fill="y")
-        self.tree.configure(yscrollcommand=scrollbar.set)
+
         
     def carregar_dados(self):
         """Carrega e processa os dados do CSV"""
@@ -165,55 +156,47 @@ class DamageControllerApp:
         """Atualiza todos os elementos da interface com os novos dados"""
         if self.df is None or self.df.empty:
             return
-            
-        # Atualiza Treeview
-        self.atualizar_treeview()
         
         # Atualiza gráficos
         self.atualizar_graficos()
         
-    def atualizar_treeview(self):
-        """Atualiza a exibição dos dados na Treeview"""
-        for item in self.tree.get_children():
-            self.tree.delete(item)
-            
-        if self.df is None or self.df.empty:
-            return
-            
-        self.tree["columns"] = list(self.df.columns)
-        for col in self.df.columns:
-            self.tree.heading(col, text=col)
-            self.tree.column(col, width=100, anchor="center")
-            
-        for _, row in self.df.head(10).iterrows():
-            self.tree.insert("", "end", values=list(row))
             
     def atualizar_graficos(self):
         """Atualiza todos os gráficos na interface"""
-        # Remove gráficos antigos se existirem
-        for attr in ['canvas_resp', 'canvas_cat', 'canvas_mes']:
+        # Remove gráficos antigos
+        for attr in ['canvas_resp', 'canvas_cat', 'canvas_mes', 'canvas_cat_fr', 'canvas_dia', 'canvas_reg']:
             if hasattr(self, attr):
                 getattr(self, attr).get_tk_widget().destroy()
         
-        # Gráfico por responsável
+        #responsável
         self.canvas_resp = gerar_grafico_responsavel(self.df, self.master)
         self.canvas_resp.draw()
         self.canvas_resp.get_tk_widget().place(x=644, y=286)
         
-        # Gráfico por categoria
+        #turno
         self.canvas_cat = gerar_grafico_turno(self.df, self.master)
         self.canvas_cat.draw()
         self.canvas_cat.get_tk_widget().place(x=54, y=286)
 
+        #categoria
         self.canvas_cat_fr = gerar_grafico_categoria(self.df, self.master)
         self.canvas_cat_fr.draw()
-        self.canvas_cat_fr.get_tk_widget().place(x=54, y=114)
+        self.canvas_cat_fr.get_tk_widget().place(x=54, y=90)
 
-        # Gráfico por mês (se existir dados de mês)
-        if 'MÊS' in self.df.columns:
-            self.canvas_mes = gerar_grafico_mensal(self.df, self.master)
-            self.canvas_mes.draw()
-            self.canvas_mes.get_tk_widget().place(x=321, y=286)
+        #mês
+        self.canvas_mes = gerar_grafico_mensal(self.df, self.master)
+        self.canvas_mes.draw()
+        self.canvas_mes.get_tk_widget().place(x=361.0, y=90)
+
+        #dia
+        self.canvas_dia = gerar_grafico_por_dia(self.df, self.master)
+        self.canvas_dia.draw()
+        self.canvas_dia.get_tk_widget().place(x=666.0, y=90)
+
+        #região e peça
+        self.canvas_reg = gerar_grafico_regiao_peca(self.df, self.master)
+        self.canvas_reg.draw()
+        self.canvas_reg.get_tk_widget().place(x=321.0, y=286)
             
     def exportar_dados(self):
         """Exporta os dados para um arquivo Excel"""
