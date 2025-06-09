@@ -242,9 +242,10 @@ class DamageControllerApp:
         else:
             messagebox.showinfo("Erro", "Nenhum dado foi carregado.")
 
-if __name__ == "__main__":
-    root = tk.Tk()
+def main(root):
     app = DamageControllerApp(root)
-    root.mainloop()
+
+if __name__ == "__main__":
+    main()
 
 

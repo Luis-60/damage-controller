@@ -4,6 +4,24 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import locale
 import re
+import tkinter as tk
+from login import tela_login
+
+
+def iniciar_aplicacao():
+    root = tk.Tk()
+    root.withdraw()  # Oculta até que login seja bem-sucedido
+
+    if tela_login(root):  # Aguarda e retorna True/False
+        from gui import main as abrir_gui
+        root.deiconify()  # Exibe a janela principal
+        abrir_gui(root)  # passa a janela já existente
+        root.mainloop()
+    else:
+        root.destroy()  # Encerra tudo
+
+if __name__ == "__main__":
+    iniciar_aplicacao()
 
 # Configuração de locale para datas em português
 try:
