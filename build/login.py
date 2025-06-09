@@ -1,10 +1,18 @@
 import tkinter as tk
 from tkinter import messagebox
 import pandas as pd
+import os
 
 def carregar_usuarios():
     try:
-        df = pd.read_excel("C:/Users/Kalevi/Downloads/damage-controller-main/damage-controller-main/backend/usuarios.xlsx")
+        # Pega o caminho da pasta onde está o script atual
+        pasta_atual = os.path.dirname(os.path.abspath(__file__))
+        # Sobe uma pasta para chegar na pasta que contém 'backend'
+        pasta_projeto = os.path.dirname(pasta_atual)
+        # Monta o caminho para o arquivo dentro da pasta 'backend'
+        caminho_arquivo = os.path.join(pasta_projeto, 'backend', 'usuarios.xlsx')
+
+        df = pd.read_excel(caminho_arquivo)
         return dict(zip(df['Login'], df['Senha']))
     except Exception as e:
         messagebox.showerror("Erro", f"Erro ao carregar usuários:\n{str(e)}")
