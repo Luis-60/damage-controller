@@ -1,7 +1,11 @@
 import tkinter as tk
 from tkinter import messagebox
 import pandas as pd
-import os
+import os 
+import customtkinter  # Certifique-se de que customtkinter está instalado
+
+janela = customtkinter.CTk()
+janela.geometry("900x600")
 
 def carregar_usuarios():
     try:
